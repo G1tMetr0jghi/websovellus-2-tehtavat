@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>JSON-kokeiluja....</title>
+</head>
+
+<style>
+    table, tr, td {
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+
+<div id="duunarit"></div>
+
+
+<script>
+    async function naytaTyontekijat() {
+        try {
+            const vastaus = await fetch('http://localhost:3001/tyontekijat');
+            if (!vastaus.ok) throw new Error('jokin meni pieleen');
+            // Jos tapahtuu virhe, heitetään ilmoitus
+            const duunarit = await vastaus.json(); // JSON:sta taulukko
+            console.log(duunarit)
+
+            pituus = Object.keys(duunarit).length
+            console.log(pituus)
+
+            let table = document.createElement("table"), row, cellA, cellB, cellC, cellD, cellE;
+            document.getElementById("duunarit").appendChild(table);
+
+            row = document.createElement("tr");
+            cellA = document.createElement("td");
+            cellB = document.createElement("td");
+            cellC = document.createElement("td");
+            cellD = document.createElement("td");
+            cellE = document.createElement("td");
+
+            cellA.innerHTML = "first name";
+            cellB.innerHTML = "last name";
+            cellC.innerHTML = "address";
+            cellD.innerHTML = "phone number";
+            cellE.innerHTML = "office phone number";
+
+            // (C4) ATTACH ROW & CELLS
+            table.appendChild(row);
+            row.appendChild(cellA);
+            row.appendChild(cellB);
+            row.appendChild(cellC);
+            row.appendChild(cellD);
+            row.appendChild(cellE);
+
+
+            for (let i=0; i<pituus; i++) {
+
+                row = document.createElement("tr");
+                cellA = document.createElement("td");
+                cellB = document.createElement("td");
+                cellC = document.createElement("td");
+                cellD = document.createElement("td");
+                cellE = document.createElement("td");
+
+                // (C3) KEY & VALUE
+                cellA.innerHTML = duunarit[i].firstName;
+                cellB.innerHTML = duunarit[i].lastName;
+                cellC.innerHTML = duunarit[i].address;
+                cellD.innerHTML = duunarit[i].phone[0].phoneNumber;
+                cellE.innerHTML = duunarit[i].phone[0].workNumber;
+
+                // (C4) ATTACH ROW & CELLS
+                table.appendChild(row);
+                row.appendChild(cellA);
+                row.appendChild(cellB);
+                row.appendChild(cellC);
+                row.appendChild(cellD);
+                row.appendChild(cellE);
+            }
+
+        } catch (error) {
+            // Otetaan heitetty virheilmoitus kiinni
+            console.log(error)
+
+        }
+    }
+    naytaTyontekijat();
+</script>
+
+</body>
+</html>

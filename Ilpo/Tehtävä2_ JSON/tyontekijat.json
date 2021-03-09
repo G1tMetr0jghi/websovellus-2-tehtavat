@@ -1,0 +1,7 @@
+{"tyontekijat": [
+  {"firstName":"Mauno", "lastName":"Ahonen", "address": "Riiantie 4, Espoo", "phone":[ {"phoneNumber": "040 675 4431", "workNumber": "09 342 987"}]},
+  {"firstName":"Matti", "lastName":"Näsä", "address": "Kangaspellontie 2, Helsinki", "phone":[ {"phoneNumber": "050 579 3402", "workNumber": "09 356 123"}]},
+  {"firstName":"Raimo", "lastName":"Vormisto", "address": "Viertotie 8, Vantaa", "phone":[ {"phoneNumber": "045 687 9105", "workNumber": null}]},
+  {"firstName":"Timo", "lastName":"Silakka", "address": "Pitkäkatu 49, Lohja", "phone":[ {"phoneNumber": "050 115 7549", "workNumber": "09 388 654"}]}
+]
+}
