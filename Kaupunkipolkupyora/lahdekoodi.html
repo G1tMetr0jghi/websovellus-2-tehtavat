@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>JSON-kokeiluja....</title>
+</head>
+
+<style>
+    table, tr, td {
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+
+<div id="pyorat"></div>
+
+
+<script>
+    async function naytaTyontekijat() {
+        try {
+            const vastaus = await fetch('https://services1.arcgis.com/sswNXkUiRoWtrx0t/arcgis/rest/services/Helsingin_ja_Espoon_kaupunkipy%C3%B6r%C3%A4asemat/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json');
+            if (!vastaus.ok) throw new Error('jokin meni pieleen');
+            // Jos tapahtuu virhe, heitetään ilmoitus
+            const pyorat = await vastaus.json(); // JSON:sta taulukko
+            console.log(pyorat.features[250].attributes)
+
+            pituus = Object.keys(pyorat.features).length
+            console.log(pituus)
+
+            let table = document.createElement("table"), row, cellA, cellB;
+            document.getElementById("pyorat").appendChild(table);
+
+            row = document.createElement("tr");
+            cellA = document.createElement("td");
+            cellB = document.createElement("td");
+
+            cellA.innerHTML = "osoite";
+            cellB.innerHTML = "kapasiteetti";
+
+
+            // (C4) ATTACH ROW & CELLS
+            table.appendChild(row);
+            row.appendChild(cellA);
+            row.appendChild(cellB);
+
+
+            for (let i=0; i<pituus; i++) {
+
+                row = document.createElement("tr");
+                cellA = document.createElement("td");
+                cellB = document.createElement("td");
+
+                // (C3) KEY & VALUE
+                cellA.innerHTML = pyorat.features[i].attributes.Osoite;
+                cellB.innerHTML = pyorat.features[i].attributes.Kapasiteet
+
+
+                // (C4) ATTACH ROW & CELLS
+                table.appendChild(row);
+                row.appendChild(cellA);
+                row.appendChild(cellB);
+
+            }
+
+        } catch (error) {
+            // Otetaan heitetty virheilmoitus kiinni
+            console.log(error)
+
+        }
+    }
+    naytaTyontekijat();
+</script>
+
+</body>
+</html>
