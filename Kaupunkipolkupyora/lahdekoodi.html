@@ -24,9 +24,10 @@
 </style>
 
 <body>
+    
+<div id="weather"></div>
 <div id="mapid"></div>
 <div id="pyorat"></div>
-
 
 <label>Valitse pyöräasema:</label>
 
@@ -44,10 +45,30 @@
     async function naytaTyontekijat() {
         try {
             const vastaus = await fetch('https://services1.arcgis.com/sswNXkUiRoWtrx0t/arcgis/rest/services/Helsingin_ja_Espoon_kaupunkipy%C3%B6r%C3%A4asemat/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json');
-            if (!vastaus.ok) throw new Error('jokin meni pieleen');
+            const vastaus_weather = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Helsinki&lang=fi&units=metric&appid=114332134ea7ed53cb7a0e88a863eb5d');
+
+            if (!vastaus.ok || !vastaus_weather.ok) throw new Error('jokin meni pieleen');
             // Jos tapahtuu virhe, heitetään ilmoitus
             const pyorat = await vastaus.json(); // JSON:sta taulukko
            // console.log(pyorat.features[120])
+           const saatila = await vastaus_weather.json();
+
+           console.log(saatila.coord.lon)
+
+           let saa_kentta = document.getElementById("weather");
+
+           let url = 'https://openweathermap.org/img/w/'+ saatila.weather[0].icon +'.png'
+            let elem = document.getElementById("weather")
+           elem = document.createElement("img");
+        elem.setAttribute("src", url);
+       // elem.setAttribute("height", "40");
+        //elem.setAttribute("width", "120");
+        elem.setAttribute("alt", "sääkuva");
+       
+
+           saa_kentta.innerHTML =  '<img src='+url+' alt="sääkuva">'  + "Tuulen nopeus: " +saatila.wind.speed + ", Tuulen suunta: " + saatila.wind.deg + 
+           ", sään kuvaus: "  + saatila.weather[0].description + ", kosteus: " + saatila.main.humidity +
+           ", asteet: " + saatila.main.temp + " celciusta"
             
 
             pituus = Object.keys(pyorat.features).length
