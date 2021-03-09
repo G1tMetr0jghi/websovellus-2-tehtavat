@@ -7,8 +7,14 @@
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"
+    crossorigin="" />
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"
     crossorigin=""></script>
 
     <title>JSON-kokeiluja....</title>
@@ -29,6 +35,11 @@
 <div id="mapid"></div>
 <div id="pyorat"></div>
 
+
+    <input type="text" id="alku">
+    <input type="text" id="loppu">
+
+
 <label>Valitse pyöräasema:</label>
 
 <select id="pyoratvalikko" data-value="x" onchange="pyorafunktio(this, event)">
@@ -36,13 +47,17 @@
 
 <script>
 
+
+
     const mymap = L.map('mapid').setView([60.192059,24.945831], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(mymap);
 
-    async function naytaTyontekijat() {
+
+
+    async function paaFunktio() {
         try {
             const vastaus = await fetch('https://services1.arcgis.com/sswNXkUiRoWtrx0t/arcgis/rest/services/Helsingin_ja_Espoon_kaupunkipy%C3%B6r%C3%A4asemat/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json');
             const vastaus_weather = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Helsinki&lang=fi&units=metric&appid=114332134ea7ed53cb7a0e88a863eb5d');
@@ -117,13 +132,29 @@
     mymap.removeLayer(marker)
     }*/
 
+
+
     let marker = L.marker([x[1],x[0]]).addTo(mymap)
     mymap.addLayer(marker);
     marker.bindPopup( "Nimi: " + x[4] + ", kapasiteetti: " + x[3]).openPopup()
 
+    let alku = document.getElementById("alku")
+    let loppu = document.getElementById("loppu")
+    //let flatlg = L.latLng
+
+   L.Routing.control({
+  waypoints: [
+    L.latLng(parseFloat(x[1]), parseFloat(x[0])),
+    L.latLng(parseFloat(alku.value),parseFloat(loppu.value))
+  ]
+}).addTo(mymap);
+
 } 
 
-    naytaTyontekijat();
+    paaFunktio();
+
+
+
 </script>
 
 </body>
