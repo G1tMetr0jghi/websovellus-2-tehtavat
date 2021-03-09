@@ -2,6 +2,15 @@
 <html>
 <head>
     <meta charset="utf-8" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
     <title>JSON-kokeiluja....</title>
 </head>
 
@@ -9,57 +18,66 @@
     table, tr, td {
         border: 1px solid black;
     }
+
+    #mapid { height: 500px; }
+
 </style>
 
 <body>
-
+<div id="mapid"></div>
 <div id="pyorat"></div>
 
 
+<label>Valitse pyöräasema:</label>
+
+<select id="pyoratvalikko" data-value="x" onchange="pyorafunktio(this, event)">
+</select> 
+
 <script>
+
+    const mymap = L.map('mapid').setView([60.192059,24.945831], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(mymap);
+
     async function naytaTyontekijat() {
         try {
             const vastaus = await fetch('https://services1.arcgis.com/sswNXkUiRoWtrx0t/arcgis/rest/services/Helsingin_ja_Espoon_kaupunkipy%C3%B6r%C3%A4asemat/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json');
             if (!vastaus.ok) throw new Error('jokin meni pieleen');
             // Jos tapahtuu virhe, heitetään ilmoitus
             const pyorat = await vastaus.json(); // JSON:sta taulukko
-            console.log(pyorat.features[250].attributes)
+           // console.log(pyorat.features[120])
+            
 
             pituus = Object.keys(pyorat.features).length
             console.log(pituus)
 
-            let table = document.createElement("table"), row, cellA, cellB;
-            document.getElementById("pyorat").appendChild(table);
+            let label = document.createElement("label")
 
-            row = document.createElement("tr");
-            cellA = document.createElement("td");
-            cellB = document.createElement("td");
-
-            cellA.innerHTML = "osoite";
-            cellB.innerHTML = "kapasiteetti";
-
-
-            // (C4) ATTACH ROW & CELLS
-            table.appendChild(row);
-            row.appendChild(cellA);
-            row.appendChild(cellB);
+            let select = document.createElement("select");
+            select.setAttribute("id", "pyoratvalikko")
 
 
             for (let i=0; i<pituus; i++) {
+            let valikko = document.getElementById("pyoratvalikko")
+             let option = document.createElement("option");
+             //option.value = pyorat.features[i].features;
+             let geometry = JSON.stringify(pyorat.features[i].geometry)
+            // option.value = geometry
+            // option.value = pyorat.features[i].geometry
+            //option.name = pyorat.features[i].geometry.x
+            option.value = [pyorat.features[i].geometry.x, pyorat.features[i].geometry.y, pyorat.features[i].attributes.ID, 
+            pyorat.features[i].attributes.Kapasiteet, pyorat.features[i].attributes.Nimi]
 
-                row = document.createElement("tr");
-                cellA = document.createElement("td");
-                cellB = document.createElement("td");
 
-                // (C3) KEY & VALUE
-                cellA.innerHTML = pyorat.features[i].attributes.Osoite;
-                cellB.innerHTML = pyorat.features[i].attributes.Kapasiteet
+            
 
+    
+                option.innerHTML = pyorat.features[i].attributes.Osoite;
+                //cellB.innerHTML = pyorat.features[i].attributes.Kapasiteet
 
-                // (C4) ATTACH ROW & CELLS
-                table.appendChild(row);
-                row.appendChild(cellA);
-                row.appendChild(cellB);
+                valikko.appendChild(option);
 
             }
 
@@ -69,6 +87,21 @@
 
         }
     }
+    function pyorafunktio(select, event) {   
+    //console.log(event.target.value[1]);
+    let x = event.target.value.split(",")
+    console.log(x)
+
+   /* if(marker != undefined){
+    mymap.removeLayer(marker)
+    }*/
+
+    let marker = L.marker([x[1],x[0]]).addTo(mymap)
+    mymap.addLayer(marker);
+    marker.bindPopup( "Nimi: " + x[4] + ", kapasiteetti: " + x[3]).openPopup()
+
+} 
+
     naytaTyontekijat();
 </script>
 
